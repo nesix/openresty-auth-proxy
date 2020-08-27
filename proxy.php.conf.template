@@ -1,0 +1,38 @@
+upstream php-fpm {
+    server unix:/var/run/php-fpm.sock;
+}
+
+server {
+
+    listen 8080;
+    root ${PHP_INDEX_DIR};
+
+    location ~* \.php$ {
+        try_files $uri @php =404;
+        fastcgi_pass php-fpm;
+        include fastcgi_params;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_param SCRIPT_FILENAME ${PHP_INDEX_DIR}$fastcgi_script_name;
+        fastcgi_param PATH_TRANSLATED ${PHP_INDEX_DIR}$fastcgi_script_name;
+        set             $path_info              $fastcgi_path_info;
+        fastcgi_param   PATH_INFO               $path_info;
+        fastcgi_index   ${PHP_INDEX_FILE};
+    }
+
+    location / {
+        try_files $uri @php;
+    }
+
+    location @php {
+        try_files $uri /${PHP_INDEX_FILE} =404;
+        fastcgi_pass php-fpm;
+        include fastcgi_params;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_param SCRIPT_FILENAME ${PHP_INDEX_DIR}$fastcgi_script_name;
+        fastcgi_param PATH_TRANSLATED ${PHP_INDEX_DIR}$fastcgi_script_name;
+        set             $path_info              $fastcgi_path_info;
+        fastcgi_param   PATH_INFO               $path_info;
+        fastcgi_index   ${PHP_INDEX_FILE};
+    }
+
+}
