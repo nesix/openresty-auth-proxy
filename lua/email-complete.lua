@@ -49,6 +49,7 @@ local response, err = http.new():request_uri("http://127.0.0.1:8080/email-comple
     body = cjson.encode({
         email = token["payload"]["email"],
         type = token["payload"]["type"],
+        uid = token["payload"]["uid"],
         password = password,
     })
 })
@@ -57,8 +58,6 @@ if err or response.status ~= 200 then
     ngx.say(response.body)
     ngx.exit(response.status)
 end
-
-
 
 ngx.status = 200
 ngx.header.content_type = "application/json; charset=utf-8"

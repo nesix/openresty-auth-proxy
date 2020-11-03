@@ -3,6 +3,8 @@ local jwt = require "resty.jwt"
 local http = require "resty.http"
 local httpc = http.new()
 
+local recaptcha
+
 ngx.req.read_body()
 
 -- read request
